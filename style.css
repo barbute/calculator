@@ -4,3 +4,13 @@
  * This file is part of etch_a_sketch and is licensed under the MIT License.
  * See the LICENSE file in the root of the project for more information.
  */
+
+ body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 10.0px;
+
+  font-family: Arial, Helvetica, sans-serif;
+ }
