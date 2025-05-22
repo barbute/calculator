@@ -15,6 +15,31 @@
   font-family: Arial, Helvetica, sans-serif;
  }
 
+ .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: end;
+
+    padding: 5.0px;
+
+    background-color: darksalmon;
+ }
+
+ .display {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: aquamarine;
+ }
+
+ button {
+    width: auto;
+    height: auto;
+ }
+
  .buttons {
     display: flex;
     justify-content: center;
@@ -22,11 +47,24 @@
  }
 
  .numpad {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+ }
+
+ .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
  }
 
  .numbers {
-    display: grid;
-    grid-column-start: 1;
-    grid-column-end: 1;
+    display: flex;
+    flex-direction: column-reverse;
+ }
+
+ .operations {
+    display: flex;
+    flex-direction: column;
  }
