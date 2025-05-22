@@ -14,3 +14,19 @@
 
   font-family: Arial, Helvetica, sans-serif;
  }
+
+ .buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ }
+
+ .numpad {
+    display: grid;
+ }
+
+ .numbers {
+    display: grid;
+    grid-column-start: 1;
+    grid-column-end: 1;
+ }
