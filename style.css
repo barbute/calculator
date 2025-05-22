@@ -5,7 +5,7 @@
  * See the LICENSE file in the root of the project for more information.
  */
 
- body {
+body {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,58 +13,127 @@
   padding: 10.0px;
 
   font-family: Arial, Helvetica, sans-serif;
- }
+}
 
- .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: end;
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
 
-    padding: 5.0px;
+  padding: 12.0px;
 
-    background-color: darksalmon;
- }
+  background-color: black;
 
- .display {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  font-size: x-large;
+  color: white;
 
-    background-color: aquamarine;
- }
+  border-radius: 8.0px;
+}
 
- button {
-    width: auto;
-    height: auto;
- }
+.display {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
 
- .buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
- }
+  margin-bottom: 8.0px;
+  padding: 6.0px 0.0px;
 
- .numpad {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
- }
+  width: 100.0%;
 
- .actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
- }
+  background-color: rgb(27, 27, 27);
 
- .numbers {
-    display: flex;
-    flex-direction: column-reverse;
- }
+  border-radius: 8.0px;
 
- .operations {
-    display: flex;
-    flex-direction: column;
- }
+  font-size: inherit;
+}
+
+.history {
+  /* Spacing to make calc look better*/
+  padding-top: 25.0px;
+  padding-right: 6.0px;
+
+  font-size: smaller;
+  
+  opacity: 0.75;
+}
+
+.editor {
+  padding-right: 6.0px;
+
+  font-weight: bold;
+
+  font-size: larger;
+}
+
+button {
+  display: inline-block;
+
+  width: 60.0px;
+  height: 60.0px;
+
+  padding: 6.25px;
+
+  font-size: inherit;
+  color: inherit;
+
+  border-radius: 50.0%;
+  border: 0.0px;
+}
+
+
+.numbers .actions button {
+  background-color: rgb(99, 99, 99);
+}
+.numbers .actions button:hover {
+  background-color: rgb(from currentColor r g b / 50.0%);
+  transition: 0.1s;
+}
+.numbers .actions button:active {
+  background-color: rgb(from currentColor r g b / 70.0%);
+}
+  
+.numbers button {
+  background-color: rgb(65, 65, 65);
+}
+.numbers button:hover {
+  background-color: rgb(from currentColor r g b / 20.0%);
+  transition: 0.1s;
+}
+.numbers button:active {
+  background-color: rgb(from currentColor r g b / 40.0%);
+}
+
+.operations button {
+  background-color: rgb(243, 159, 3);
+}
+.operations button:hover {
+  background-color: rgb(255, 177, 33);
+  transition: 0.1s;
+}
+.operations button:active {
+  background-color: rgb(253, 198, 96);
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.numbers {
+  display: flex;
+  flex-direction: column-reverse;
+
+  gap: 6.0px;
+}
+
+.operations {
+  display: flex;
+  flex-direction: column;
+
+  margin-left: 6.0px;
+
+  gap: 6.0px;
+}
