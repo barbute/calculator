@@ -108,7 +108,20 @@ opsButtons.forEach((button) => {
         break;
       default:
         operation = Operation.NOOP;
-        break;    
+        break;
+    }
+    // Check if current entry is valid before moving on
+    if (currentArgs === editorArgOne && arguementBuffer.length > 0) {
+      // Dispay operator symbol
+      if (operation !== Operation.NOOP) {
+        editorOperator.textContent = button.textContent;
+      }
+      // Set argument one to the current buffer content
+      argumentOne = Number.parseFloat(arguementBuffer.join(""));
+      // Clear buffer for next args
+      arguementBuffer = [];
+      // Set currently editing args to second slot
+      currentArgs = editorArgTwo;
     }
   });
-})
+});
