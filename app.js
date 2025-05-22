@@ -91,3 +91,24 @@ argsButtons.forEach((button) => {
   });
 });
 
+opsButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    switch (button.id) {
+      case "add":
+        operation = Operation.ADD;
+        break;
+      case "subtract":
+        operation = Operation.SUBTRACT;
+        break;
+      case "multiply":
+        operation = Operation.MULTIPLY;
+        break;
+      case "divide":
+        operation = Operation.DIVIDE;
+        break;
+      default:
+        operation = Operation.NOOP;
+        break;    
+    }
+  });
+})
