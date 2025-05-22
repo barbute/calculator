@@ -70,7 +70,13 @@ let currentArgs = editorArgOne;
 
 function enterNumber(number) {
   arguementBuffer.push(number);
-  currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
+  // Decimal doesn't appear on display until another number is entered, so just
+  // display it until the next number is entered 
+  if (number === ".") {
+    currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
+  } else {
+    currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
+  }
 }
 
 function enterOperation(operation) {
