@@ -68,21 +68,6 @@ const editorResult = document.querySelector(".editor #result");
 let arguementBuffer = [];
 let currentArgs = editorArgOne;
 
-function enterNumber(number) {
-  arguementBuffer.push(number);
-  // Decimal doesn't appear on display until another number is entered, so just
-  // display it until the next number is entered 
-  if (number === ".") {
-    currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
-  } else {
-    currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
-  }
-}
-
-function enterOperation(operation) {
-
-}
-
 const container = document.querySelector(".container");
 // Query all buttons that can be used as arguments
 const argsButtons = document.querySelectorAll(".args");
@@ -90,10 +75,27 @@ const argsButtons = document.querySelectorAll(".args");
 const opsButtons = document.querySelectorAll(".ops");
 // Query the equals button (button that solves an entry)
 const equButton = document.querySelector(".equ");
+// Query actions buttons that modify the number
+const clearAllButton = document.querySelector("#all-clear");
+const clearButton = document.querySelector("#clear");
+const signFlipButton = document.querySelector("#sign-flip");
 
 argsButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    enterNumber(button.textContent);
+    let number = button.textContent;
+    // Don't let user enter multiple decimals
+    if (number === "." && arguementBuffer[arguementBuffer.length - 1] === ".") {
+      console.log("INVALID ENTRY - NO EXTRA DECIMALS");
+    } else {
+      arguementBuffer.push(number);
+      // Decimal doesn't appear on display until another number is entered, so just
+      // display it until the next number is entered 
+      if (number === ".") {
+        currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
+      } else {
+        currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
+      }
+    }
   });
 });
 
@@ -130,4 +132,36 @@ opsButtons.forEach((button) => {
       currentArgs = editorArgTwo;
     }
   });
+});
+
+// Completely clears the state of the calculator to initial
+clearAllButton.addEventListener("click", () => {
+  argumentOne = null;
+  argumentTwo = null;
+  operation = Operation.NOOP;
+  
+  arguementBuffer = [];
+  currentArgs = editorArgOne;
+
+  editorArgOne.textContent = "";
+  editorOperator.textContent = "";
+  editorArgTwo.textContent = "";
+  editorResult.textContent = "";
+});
+
+clearButton.addEventListener("click", () => {
+  if (arguementBuffer.length > 0) {
+    console.log(arguementBuffer.pop());
+    console.log(arguementBuffer);
+    if (arguementBuffer[arguementBuffer.length - 1] === ".") {
+      currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
+    } else {
+      currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
+    }
+  } else {
+    if (editorOperator.textContent !== "") {
+      operation = Operation.NOOP;
+      editorOperator.textContent = "";
+    }
+  }
 });
