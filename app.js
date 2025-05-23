@@ -3,6 +3,9 @@
  * 
  * This file is part of etch_a_sketch and is licensed under the MIT License.
  * See the LICENSE file in the root of the project for more information.
+ * 
+ * NOTE Apologies for this monstronsity of a js file. This could be the most
+ * cooked code I've written since I learned what a for-loop was
  */
 function add(x, y) {
   return x + y;
@@ -57,8 +60,18 @@ function operate(argOne, argTwo, op) {
     result = 0.0;
     console.log("INVALID ARGUMENTS");
   }
-  return result.toPrecision(3);
+  return roundToDecimal(result, 3);
 }
+
+function roundToDecimal(num, decimalPlaces) {
+  const factor = Math.pow(10, decimalPlaces);
+  return Math.round(num * factor) / factor;
+}
+
+const historyArgOne = document.querySelector(".history #arg-one");
+const historyOperator = document.querySelector(".history #operator");
+const historyArgTwo = document.querySelector(".history #arg-two");
+const historyEquals = document.querySelector(".history #equals");
 
 const editorArgOne = document.querySelector(".editor #arg-one");
 const editorOperator = document.querySelector(".editor #operator");
@@ -87,6 +100,9 @@ argsButtons.forEach((button) => {
     if (number === "." && arguementBuffer[arguementBuffer.length - 1] === ".") {
       console.log("INVALID ENTRY - NO EXTRA DECIMALS");
     } else {
+      // if (currentArgs !== editorArgTwo && operation === Operation.NOOP) {
+
+      // }
       arguementBuffer.push(number);
       // Decimal doesn't appear on display until another number is entered, so just
       // display it until the next number is entered 
@@ -136,6 +152,11 @@ opsButtons.forEach((button) => {
         editorOperator.textContent = button.textContent;
       }
     }
+    // Just clear the history part of the display if an operater is selected
+    historyArgOne.textContent = "";
+    historyOperator.textContent = "";
+    historyArgTwo.textContent = "";
+    historyEquals.textContent = "";
   });
 });
 
@@ -146,30 +167,58 @@ equButton.addEventListener("click", () => {
     }
   }
   if (argumentOne !== null && argumentTwo !== null) {
+    if (argumentTwo === 0 && operation === Operation.DIVIDE) {
+      resetState();
+      alert("if you divide by 0 again, jeffery will be upset");
+      return;
+    }
     let result = operate(argumentOne, argumentTwo, operation);
-    editorResult.textContent = "= " + result;
+    argumentOne = result;
+    currentArgs = editorArgTwo;
+
+    historyArgOne.textContent = editorArgOne.textContent;
+    historyOperator.textContent = editorOperator.textContent;
+    historyArgTwo.textContent = editorArgTwo.textContent;
+    historyEquals.textContent = "=";
+    
+    argumentTwo = null;
+    operation = Operation.NOOP;
+
+    arguementBuffer = [];
+
+    editorArgOne.textContent = argumentOne;
+    editorOperator.textContent = "";
+    editorArgTwo.textContent = "";
+    editorResult.textContent = "";
   }
 })
 
-// Completely clears the state of the calculator to initial
-clearAllButton.addEventListener("click", () => {
+function resetState() {
   argumentOne = null;
   argumentTwo = null;
   operation = Operation.NOOP;
   
   arguementBuffer = [];
   currentArgs = editorArgOne;
-
+  
   editorArgOne.textContent = "";
   editorOperator.textContent = "";
   editorArgTwo.textContent = "";
   editorResult.textContent = "";
+
+  historyArgOne.textContent = "";
+  historyOperator.textContent = "";
+  historyArgTwo.textContent = "";
+  historyEquals.textContent = "";
+}
+
+// Completely clears the state of the calculator to initial
+clearAllButton.addEventListener("click", () => {
+  resetState();
 });
 
 // Cleanest rockstar code implementation:
 clearButton.addEventListener("click", () => {
-  console.log(arguementBuffer[arguementBuffer.length - 1]);
-  console.log(arguementBuffer[arguementBuffer.length - 2]);
   // If there's a negative sign just clear the buffer
   if (arguementBuffer[arguementBuffer.length - 1] === "-") {
     arguementBuffer = [];
@@ -184,6 +233,8 @@ clearButton.addEventListener("click", () => {
     arguementBuffer.pop();
     if (arguementBuffer[arguementBuffer.length - 1] === ".") {
       currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
+    } else if (arguementBuffer.length === 0) {
+      currentArgs.textContent = "";
     } else {
       currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
     }
@@ -191,6 +242,9 @@ clearButton.addEventListener("click", () => {
     if (editorOperator.textContent !== "") {
       operation = Operation.NOOP;
       editorOperator.textContent = "";
+      // Since operator is cleared we move back to argument one
+      currentArgs = editorArgOne;
+      arguementBuffer = editorArgOne.textContent.split("");
     }
   }
 });
