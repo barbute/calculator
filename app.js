@@ -139,6 +139,18 @@ opsButtons.forEach((button) => {
   });
 });
 
+equButton.addEventListener("click", () => {
+  if (currentArgs == editorArgTwo) {
+    if (arguementBuffer.length > 0) {
+      argumentTwo = Number.parseFloat(arguementBuffer.join(""));
+    }
+  }
+  if (argumentOne !== null && argumentTwo !== null) {
+    let result = operate(argumentOne, argumentTwo, operation);
+    editorResult.textContent = "= " + result;
+  }
+})
+
 // Completely clears the state of the calculator to initial
 clearAllButton.addEventListener("click", () => {
   argumentOne = null;
