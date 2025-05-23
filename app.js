@@ -130,6 +130,11 @@ opsButtons.forEach((button) => {
       arguementBuffer = [];
       // Set currently editing args to second slot
       currentArgs = editorArgTwo;
+    } else if (currentArgs === editorArgTwo && editorOperator.textContent === "") {
+      // Dispay operator symbol
+      if (operation !== Operation.NOOP) {
+        editorOperator.textContent = button.textContent;
+      }
     }
   });
 });
@@ -149,10 +154,22 @@ clearAllButton.addEventListener("click", () => {
   editorResult.textContent = "";
 });
 
+// Cleanest rockstar code implementation:
 clearButton.addEventListener("click", () => {
+  console.log(arguementBuffer[arguementBuffer.length - 1]);
+  console.log(arguementBuffer[arguementBuffer.length - 2]);
+  // If there's a negative sign just clear the buffer
+  if (arguementBuffer[arguementBuffer.length - 1] === "-") {
+    arguementBuffer = [];
+    currentArgs.textContent = "";
+    return;
+  } else if (arguementBuffer[arguementBuffer.length - 2] === "-") {
+    arguementBuffer.pop();
+    currentArgs.textContent = "-";
+    return;
+  }
   if (arguementBuffer.length > 0) {
-    console.log(arguementBuffer.pop());
-    console.log(arguementBuffer);
+    arguementBuffer.pop();
     if (arguementBuffer[arguementBuffer.length - 1] === ".") {
       currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
     } else {
@@ -162,6 +179,17 @@ clearButton.addEventListener("click", () => {
     if (editorOperator.textContent !== "") {
       operation = Operation.NOOP;
       editorOperator.textContent = "";
+    }
+  }
+});
+
+signFlipButton.addEventListener("click", () => {
+  if (arguementBuffer.length > 0) {
+    arguementBuffer.unshift("-");
+    if (arguementBuffer[arguementBuffer.length - 1] === ".") {
+      currentArgs.textContent = (Number.parseFloat(arguementBuffer.join(""))) + ".";  
+    } else {
+      currentArgs.textContent = (Number.parseFloat(arguementBuffer.join("")))
     }
   }
 });
