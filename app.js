@@ -4,9 +4,8 @@
  * This file is part of etch_a_sketch and is licensed under the MIT License.
  * See the LICENSE file in the root of the project for more information.
  * 
- * NOTE Apologies for this monstronsity of a js file. This could be the most
- * cooked code I've written since I learned what a for-loop was
  */
+
 function add(x, y) {
   return x + y;
 }
@@ -49,7 +48,12 @@ function operate(argOne, argTwo, op) {
         result = multiply(argOne, argTwo);
         break;
       case Operation.DIVIDE:
-        result = divide(argOne, argTwo);
+        if (argTwo === 0) {
+          result = 0.0;
+          console.log("INVALID OPERATION");
+        } else {
+          result = divide(argOne, argTwo);
+        }
         break;
       default:
         result = 0.0;
@@ -71,15 +75,10 @@ function roundToDecimal(num, decimalPlaces) {
 const historyArgOne = document.querySelector(".history #arg-one");
 const historyOperator = document.querySelector(".history #operator");
 const historyArgTwo = document.querySelector(".history #arg-two");
-const historyEquals = document.querySelector(".history #equals");
 
-const editorArgOne = document.querySelector(".editor #arg-one");
-const editorOperator = document.querySelector(".editor #operator");
-const editorArgTwo = document.querySelector(".editor #arg-two");
-const editorResult = document.querySelector(".editor #result");
+const editor = document.querySelector(".editor");
 
-let arguementBuffer = [];
-let currentArgs = editorArgOne;
+let buffer = [editor.textContent];
 
 const container = document.querySelector(".container");
 // Query all buttons that can be used as arguments
@@ -95,167 +94,220 @@ const signFlipButton = document.querySelector("#sign-flip");
 
 argsButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    let number = button.textContent;
-    // Don't let user enter multiple decimals
-    if (number === "." && arguementBuffer[arguementBuffer.length - 1] === ".") {
-      console.log("INVALID ENTRY - NO EXTRA DECIMALS");
-    } else {
-      // if (currentArgs !== editorArgTwo && operation === Operation.NOOP) {
-
-      // }
-      arguementBuffer.push(number);
-      // Decimal doesn't appear on display until another number is entered, so just
-      // display it until the next number is entered 
-      if (number === ".") {
-        currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
-      } else {
-        currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
-      }
-    }
+    addNumber(button.textContent);
+    clearHistory();
+    printBuffer();
   });
 });
 
 opsButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    switch (button.id) {
-      case "add":
-        operation = Operation.ADD;
-        break;
-      case "subtract":
-        operation = Operation.SUBTRACT;
-        break;
-      case "multiply":
-        operation = Operation.MULTIPLY;
-        break;
-      case "divide":
-        operation = Operation.DIVIDE;
-        break;
-      default:
-        operation = Operation.NOOP;
-        break;
-    }
-    // Check if current entry is valid before moving on
-    if (currentArgs === editorArgOne && arguementBuffer.length > 0) {
-      // Dispay operator symbol
-      if (operation !== Operation.NOOP) {
-        editorOperator.textContent = button.textContent;
-      }
-      // Set argument one to the current buffer content
-      argumentOne = Number.parseFloat(arguementBuffer.join(""));
-      // Clear buffer for next args
-      arguementBuffer = [];
-      // Set currently editing args to second slot
-      currentArgs = editorArgTwo;
-    } else if (currentArgs === editorArgTwo && editorOperator.textContent === "") {
-      // Dispay operator symbol
-      if (operation !== Operation.NOOP) {
-        editorOperator.textContent = button.textContent;
+    // Check if there is already an operator in the buffer
+    if (getOperatorIndex(buffer) !== -1) {
+      const lastDigit = parseFloat(buffer[buffer.length - 1]); 
+      // Check if there is a valid number after the operator
+      if (Number.isNaN(lastDigit)) {
+        // If we have an operator already, but there is no number after, it then
+        // replace the current operator
+        buffer[getOperatorIndex(buffer)] = button.textContent;
+        editor.textContent = buffer.join("");
+        printBuffer();
+        // Exit out since we've already set the operator
+        return;
+      } else {
+        // If so, evaluate before setting the operator
+        evaluate();
       }
     }
-    // Just clear the history part of the display if an operater is selected
-    historyArgOne.textContent = "";
-    historyOperator.textContent = "";
-    historyArgTwo.textContent = "";
-    historyEquals.textContent = "";
+    setOperator(button.textContent);
+    printBuffer();
   });
 });
 
-equButton.addEventListener("click", () => {
-  if (currentArgs == editorArgTwo) {
-    if (arguementBuffer.length > 0) {
-      argumentTwo = Number.parseFloat(arguementBuffer.join(""));
-    }
-  }
-  if (argumentOne !== null && argumentTwo !== null) {
-    if (argumentTwo === 0 && operation === Operation.DIVIDE) {
-      resetState();
-      alert("if you divide by 0 again, jeffery will be upset");
-      return;
-    }
-    let result = operate(argumentOne, argumentTwo, operation);
-    argumentOne = result;
-    currentArgs = editorArgTwo;
-
-    historyArgOne.textContent = editorArgOne.textContent;
-    historyOperator.textContent = editorOperator.textContent;
-    historyArgTwo.textContent = editorArgTwo.textContent;
-    historyEquals.textContent = "=";
-    
-    argumentTwo = null;
-    operation = Operation.NOOP;
-
-    arguementBuffer = [];
-
-    editorArgOne.textContent = argumentOne;
-    editorOperator.textContent = "";
-    editorArgTwo.textContent = "";
-    editorResult.textContent = "";
-  }
+clearAllButton.addEventListener("click", () => {
+  resetState();
+  printBuffer();
 })
+
+clearButton.addEventListener("click", () => {
+  clear();
+  clearHistory();
+  printBuffer();
+});
+
+signFlipButton.addEventListener("click", () => {
+  signFlip();
+  clearHistory();
+  printBuffer();
+});
+
+equButton.addEventListener("click", () => {
+  evaluate();
+  printBuffer();
+});
 
 function resetState() {
   argumentOne = null;
   argumentTwo = null;
   operation = Operation.NOOP;
-  
-  arguementBuffer = [];
-  currentArgs = editorArgOne;
-  
-  editorArgOne.textContent = "";
-  editorOperator.textContent = "";
-  editorArgTwo.textContent = "";
-  editorResult.textContent = "";
 
   historyArgOne.textContent = "";
   historyOperator.textContent = "";
   historyArgTwo.textContent = "";
-  historyEquals.textContent = "";
+
+  editor.textContent = "0";
+  
+  buffer = [editor.textContent];
 }
 
-// Completely clears the state of the calculator to initial
-clearAllButton.addEventListener("click", () => {
-  resetState();
-});
+function clearHistory() {
+  historyArgOne.textContent = "";
+  historyOperator.textContent = "";
+  historyArgTwo.textContent = "";
+}
 
-// Cleanest rockstar code implementation:
-clearButton.addEventListener("click", () => {
-  // If there's a negative sign just clear the buffer
-  if (arguementBuffer[arguementBuffer.length - 1] === "-") {
-    arguementBuffer = [];
-    currentArgs.textContent = "";
-    return;
-  } else if (arguementBuffer[arguementBuffer.length - 2] === "-") {
-    arguementBuffer.pop();
-    currentArgs.textContent = "-";
-    return;
-  }
-  if (arguementBuffer.length > 0) {
-    arguementBuffer.pop();
-    if (arguementBuffer[arguementBuffer.length - 1] === ".") {
-      currentArgs.textContent = Number.parseFloat(arguementBuffer.join("")) + ".";  
-    } else if (arguementBuffer.length === 0) {
-      currentArgs.textContent = "";
-    } else {
-      currentArgs.textContent = Number.parseFloat(arguementBuffer.join(""));
+function getOperatorIndex(arr) {
+  let operatorIndex = arr.findIndex(function(value, index, array) {
+    return value === "÷" || 
+           value === "×" ||
+           // The subtraction symbol has to be different from a minus since
+           // we need to use the hyphen to indicate a negative number
+           value === "–" ||
+           value === "+"
+  });
+  return operatorIndex;
+}
+
+function addNumber(number) {  
+  // Check if entry is valid
+  if (number === ".") {
+    let operatorIndex = getOperatorIndex(buffer);
+    let startIndex = (operatorIndex !== -1) ? operatorIndex : 0;
+    for (let i = startIndex; i < buffer.length; i++) {
+      // If there's already decimal skip the addition
+      if (buffer[i] === number) {
+        console.log("INVALID ATTEMPT TO ADD NUMBER");
+        return;
+      }
     }
+  }
+  // If we are in the initial state, replace the default 0 with the first number
+  if (buffer.length === 1 && buffer[0] === "0") {
+    buffer = [number];
   } else {
-    if (editorOperator.textContent !== "") {
-      operation = Operation.NOOP;
-      editorOperator.textContent = "";
-      // Since operator is cleared we move back to argument one
-      currentArgs = editorArgOne;
-      arguementBuffer = editorArgOne.textContent.split("");
-    }
+    // Push to buffer if checks are valid
+    buffer.push(number);
   }
-});
+  // Update display
+  editor.textContent = buffer.join("");
+}
 
-signFlipButton.addEventListener("click", () => {
-  if (arguementBuffer.length > 0) {
-    arguementBuffer.unshift("-");
-    if (arguementBuffer[arguementBuffer.length - 1] === ".") {
-      currentArgs.textContent = (Number.parseFloat(arguementBuffer.join(""))) + ".";  
-    } else {
-      currentArgs.textContent = (Number.parseFloat(arguementBuffer.join("")))
+function setOperator(operator) {
+  buffer.push(operator);
+  editor.textContent = buffer.join("");
+}
+
+function signFlip() {
+  let number = 0.0;
+  // Check if operator is present, if so then we are flipping the sign of the
+  // second operand
+  let opIndex = getOperatorIndex(buffer);
+  if (opIndex === -1) {
+    number = parseFloat(buffer.join(""));
+    number *= -1.0;
+    buffer = number.toString().split("");
+  } else {
+    // If there's nothing after operator, do nothing
+    if (opIndex + 1 === buffer.length) {
+      return;
     }
+    // Extract and save first operand and operator, then negate
+    let operandOne = buffer.splice(0, opIndex);
+    let operator = buffer.splice(0, 1);
+    number = parseFloat(buffer.join(""));
+    number *= -1.0;
+    // Reconstruct buffer with new number
+    buffer = operandOne.concat(operator.concat(number.toString().split("")));
   }
-});
+  editor.textContent = buffer.join("");
+}
+
+function clear() {
+  buffer.pop();
+  // If we delete a digit and there's only a negative symbol left, delete that
+  // too so it doesn't confuse the user or lead to an invalid operation
+  if (buffer[buffer.length - 1] === "-") {
+    buffer.pop();
+  }
+  // If clearing makes buffer empty, reset buffer to it's initial state
+  if (buffer.length === 0) {
+    buffer = ["0"];
+  }
+  editor.textContent = buffer.join("");
+}
+
+function evaluate() {
+  if (!isCompleteExpression()) {
+    console.log("EXPRESSION INVALID")
+    return;
+  }
+  // Parse buffer
+  const opIndex = getOperatorIndex(buffer);
+  argumentOne = parseFloat(buffer.splice(0, opIndex).join(""));
+  let operator = buffer.splice(0, 1).toString();
+  operation = getOperationFromText(operator);
+  argumentTwo = parseFloat(buffer.splice(0, buffer.length).join(""));
+
+  // Run the operation
+  let result = operate(argumentOne, argumentTwo, operation);
+
+  // Update history
+  historyArgOne.textContent = argumentOne;
+  historyOperator.textContent = operator;
+  historyArgTwo.textContent = argumentTwo;
+  
+  // Store result in buffer
+  buffer = ["0"]; // Start but resetting the buffer to initial state
+  buffer = result.toString().split("");
+  editor.textContent = buffer.join("");
+}
+
+function isCompleteExpression() {
+  const opIndex = getOperatorIndex(buffer);
+  // False if operator doesn't exist
+  if (opIndex === -1) {
+    return false;
+  }
+  // False if there's nothing after operator 
+  else if (opIndex + 1 === buffer.length) {
+    return false;
+  }
+  // False if it's just the negative symbol after operator 
+  else if (buffer[opIndex + 1] === "-" && (opIndex + 2) === buffer.length) {
+    return false;
+  }
+  // True if passes above conditions
+  else {
+    return true;
+  }
+}
+
+function getOperationFromText(operator) {
+  switch (operator) {
+    case "÷":
+      return Operation.DIVIDE;
+    case "×":
+      return Operation.MULTIPLY;
+    case "–":
+      return Operation.SUBTRACT;
+    case "+":
+      return Operation.ADD;
+    default:
+      console.log("INVALID OPERATOR PARSED")
+      return Operation.NOOP;
+  }
+}
+
+function printBuffer() {
+  console.log(buffer);
+}

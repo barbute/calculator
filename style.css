@@ -50,21 +50,31 @@ body {
 }
 
 .history {
+  min-height: 24.0px;
+  max-width: 250.0px;
+
   /* Spacing to make calc look better*/
   padding-top: 25.0px;
   padding-right: 6.0px;
 
   font-size: smaller;
-  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+
   opacity: 0.75;
 }
 
 .editor {
+  min-height: 34.0px;
+  max-width: 250.0px;
   padding-right: 6.0px;
 
   font-weight: bold;
-
   font-size: larger;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 button {
