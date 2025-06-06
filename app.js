@@ -49,7 +49,12 @@ function operate(argOne, argTwo, op) {
         result = multiply(argOne, argTwo);
         break;
       case Operation.DIVIDE:
-        result = divide(argOne, argTwo);
+        if (argTwo === 0) {
+          result = 0.0;
+          console.log("INVALID OPERATION");
+        } else {
+          result = divide(argOne, argTwo);
+        }
         break;
       default:
         result = 0.0;
@@ -78,7 +83,6 @@ const editorOperator = document.querySelector(".editor #operator");
 const editorArgTwo = document.querySelector(".editor #arg-two");
 const editorResult = document.querySelector(".editor #result");
 
-let arguementBuffer = [];
 let currentArgs = editorArgOne;
 
 const container = document.querySelector(".container");
