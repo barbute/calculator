@@ -75,15 +75,10 @@ function roundToDecimal(num, decimalPlaces) {
 const historyArgOne = document.querySelector(".history #arg-one");
 const historyOperator = document.querySelector(".history #operator");
 const historyArgTwo = document.querySelector(".history #arg-two");
-const historyEquals = document.querySelector(".history #equals");
 
-const editorArgOne = document.querySelector(".editor #arg-one");
-const editorOperator = document.querySelector(".editor #operator");
-const editorArgTwo = document.querySelector(".editor #arg-two");
-const editorResult = document.querySelector(".editor #result");
+const editor = document.querySelector(".editor");
 
-let currentArgs = editorArgOne;
-let buffer = [];
+let buffer = [editor.textContent];
 
 const container = document.querySelector(".container");
 // Query all buttons that can be used as arguments
@@ -105,40 +100,46 @@ function resetState() {
   argumentOne = null;
   argumentTwo = null;
   operation = Operation.NOOP;
-  
-  buffer = [];
-  currentArgs = editorArgOne;
-  
-  editorArgOne.textContent = "";
-  editorOperator.textContent = "";
-  editorArgTwo.textContent = "";
-  editorResult.textContent = "";
 
   historyArgOne.textContent = "";
   historyOperator.textContent = "";
   historyArgTwo.textContent = "";
-  historyEquals.textContent = "";
+
+  editor.textContent = "";
+  
+  buffer = [editor.textContent];
 }
 
-function clearEditorContent() {
-  editorArgOne.textContent = "";
-  editorOperator.textContent = "";
-  editorArgTwo.textContent = "";
-  editorResult.textContent = "";
+function getOperatorIndex(arr) {
+  let operatorIndex = arr.findIndex(function(value, index, array) {
+    return value === "÷" || 
+           value === "×" ||
+           value === "-" ||
+           value === "+"
+  });
+  return operatorIndex;
 }
 
-function addNumber(number) {
+function addNumber(number) {  
   // Check if entry is valid
   if (number === ".") {
-    for (let i = 0; i < buffer.length; i++) {
+    let operatorIndex = getOperatorIndex(buffer);
+    let startIndex = (operatorIndex !== -1) ? operatorIndex : 0;
+    for (let i = startIndex; i < buffer.length; i++) {
       // If there's already decimal skip the addition
       if (buffer[i] === number) {
         return;
       }
     }
   }
-  // Push to buffer if checks are valid
-  buffer.push(number);
-  // Update display
-  currentArgs.textContent += number;
+  // If we are in the initial state, replace the default 0 with the first number
+  if (buffer.length === 1 && buffer[0] === "0") {
+    buffer = [number];
+    editor.textContent = number;
+  } else {
+    // Push to buffer if checks are valid
+    buffer.push(number);
+    // Update display
+    editor.textContent += number;
+  }
 }
