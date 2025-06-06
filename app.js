@@ -106,6 +106,16 @@ opsButtons.forEach((button) => {
   });
 });
 
+clearButton.addEventListener("click", () => {
+  clear();
+  printBuffer();
+});
+
+clearAllButton.addEventListener("click", () => {
+  resetState();
+  printBuffer();
+})
+
 function resetState() {
   argumentOne = null;
   argumentTwo = null;
@@ -115,7 +125,7 @@ function resetState() {
   historyOperator.textContent = "";
   historyArgTwo.textContent = "";
 
-  editor.textContent = "";
+  editor.textContent = "0";
   
   buffer = [editor.textContent];
 }
@@ -161,6 +171,15 @@ function setOperator(operator) {
   // If it does, replace the current
   } else {
     buffer[opIndex] = operator;
+  }
+  editor.textContent = buffer.join("");
+}
+
+function clear() {
+  buffer.pop();
+  // If clearing makes buffer empty, reset buffer to it's initial state
+  if (buffer.length === 0) {
+    buffer = ["0"];
   }
   editor.textContent = buffer.join("");
 }
