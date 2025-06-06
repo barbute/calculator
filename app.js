@@ -4,9 +4,8 @@
  * This file is part of etch_a_sketch and is licensed under the MIT License.
  * See the LICENSE file in the root of the project for more information.
  * 
- * NOTE Apologies for this monstronsity of a js file. This could be the most
- * cooked code I've written since I learned what a for-loop was
  */
+
 function add(x, y) {
   return x + y;
 }
@@ -84,6 +83,7 @@ const editorArgTwo = document.querySelector(".editor #arg-two");
 const editorResult = document.querySelector(".editor #result");
 
 let currentArgs = editorArgOne;
+let buffer = [];
 
 const container = document.querySelector(".container");
 // Query all buttons that can be used as arguments
@@ -97,12 +97,16 @@ const clearAllButton = document.querySelector("#all-clear");
 const clearButton = document.querySelector("#clear");
 const signFlipButton = document.querySelector("#sign-flip");
 
+argsButtons.forEach((button) => {
+  button.addEventListener("click", () => {addNumber(button.textContent)});
+})
+
 function resetState() {
   argumentOne = null;
   argumentTwo = null;
   operation = Operation.NOOP;
   
-  arguementBuffer = [];
+  buffer = [];
   currentArgs = editorArgOne;
   
   editorArgOne.textContent = "";
@@ -114,4 +118,27 @@ function resetState() {
   historyOperator.textContent = "";
   historyArgTwo.textContent = "";
   historyEquals.textContent = "";
+}
+
+function clearEditorContent() {
+  editorArgOne.textContent = "";
+  editorOperator.textContent = "";
+  editorArgTwo.textContent = "";
+  editorResult.textContent = "";
+}
+
+function addNumber(number) {
+  // Check if entry is valid
+  if (number === ".") {
+    for (let i = 0; i < buffer.length; i++) {
+      // If there's already decimal skip the addition
+      if (buffer[i] === number) {
+        return;
+      }
+    }
+  }
+  // Push to buffer if checks are valid
+  buffer.push(number);
+  // Update display
+  currentArgs.textContent += number;
 }
