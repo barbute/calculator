@@ -1,9 +1,8 @@
 /*
  * Copyright (c) 2025 barbute
  * 
- * This file is part of etch_a_sketch and is licensed under the MIT License.
+ * This file is part of calculator and is licensed under the MIT License.
  * See the LICENSE file in the root of the project for more information.
- * 
  */
 
 function add(x, y) {
