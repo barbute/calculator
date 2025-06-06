@@ -102,8 +102,24 @@ argsButtons.forEach((button) => {
 
 opsButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    // Check if there is already an operator in the buffer
+    if (getOperatorIndex(buffer) !== -1) {
+      const lastDigit = parseFloat(buffer[buffer.length - 1]); 
+      // Check if there is a valid number after the operator
+      if (Number.isNaN(lastDigit)) {
+        // If we have an operator already, but there is no number after, it then
+        // replace the current operator
+        buffer[getOperatorIndex(buffer)] = button.textContent;
+        editor.textContent = buffer.join("");
+        printBuffer();
+        // Exit out since we've already set the operator
+        return;
+      } else {
+        // If so, evaluate before setting the operator
+        evaluate();
+      }
+    }
     setOperator(button.textContent);
-    clearHistory();
     printBuffer();
   });
 });
@@ -170,6 +186,7 @@ function addNumber(number) {
     for (let i = startIndex; i < buffer.length; i++) {
       // If there's already decimal skip the addition
       if (buffer[i] === number) {
+        console.log("INVALID ATTEMPT TO ADD NUMBER");
         return;
       }
     }
@@ -186,14 +203,7 @@ function addNumber(number) {
 }
 
 function setOperator(operator) {
-  let opIndex = getOperatorIndex(buffer);
-  // If the operator doesn't exist add it to buffer
-  if (opIndex === -1) {  
-    buffer.push(operator);
-  // If it does, replace the current
-  } else {
-    buffer[opIndex] = operator;
-  }
+  buffer.push(operator);
   editor.textContent = buffer.join("");
 }
 
@@ -238,6 +248,7 @@ function clear() {
 
 function evaluate() {
   if (!isCompleteExpression()) {
+    console.log("EXPRESSION INVALID")
     return;
   }
   // Parse buffer
@@ -272,7 +283,7 @@ function isCompleteExpression() {
     return false;
   }
   // False if it's just the negative symbol after operator 
-  else if (buffer[opIndex + 1] === "-") {
+  else if (buffer[opIndex + 1] === "-" && (opIndex + 2) === buffer.length) {
     return false;
   }
   // True if passes above conditions
@@ -292,6 +303,7 @@ function getOperationFromText(operator) {
     case "+":
       return Operation.ADD;
     default:
+      console.log("INVALID OPERATOR PARSED")
       return Operation.NOOP;
   }
 }
