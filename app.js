@@ -106,13 +106,18 @@ opsButtons.forEach((button) => {
   });
 });
 
+clearAllButton.addEventListener("click", () => {
+  resetState();
+  printBuffer();
+})
+
 clearButton.addEventListener("click", () => {
   clear();
   printBuffer();
 });
 
-clearAllButton.addEventListener("click", () => {
-  resetState();
+signFlipButton.addEventListener("click", () => {
+  signFlip();
   printBuffer();
 })
 
@@ -134,7 +139,9 @@ function getOperatorIndex(arr) {
   let operatorIndex = arr.findIndex(function(value, index, array) {
     return value === "÷" || 
            value === "×" ||
-           value === "-" ||
+           // The subtraction symbol has to be different from a minus since
+           // we need to use the hyphen to indicate a negative number
+           value === "–" ||
            value === "+"
   });
   return operatorIndex;
@@ -175,14 +182,51 @@ function setOperator(operator) {
   editor.textContent = buffer.join("");
 }
 
+function signFlip() {
+  let number = 0.0;
+  // Check if operator is present, if so then we are flipping the sign of the
+  // second operand
+  let opIndex = getOperatorIndex(buffer);
+  if (opIndex === -1) {
+    number = parseFloat(buffer.join(""));
+    number *= -1.0;
+    buffer = number.toString().split("");
+  } else {
+    // If there's nothing after operator, do nothing
+    if (opIndex + 1 === buffer.length) {
+      return;
+    }
+    // Extract and save first operand and operator, then negate
+    let operandOne = buffer.splice(0, opIndex);
+    let operator = buffer.splice(0, 1);
+    number = parseFloat(buffer.join(""));
+    number *= -1.0;
+    // Reconstruct buffer with new number
+    buffer = operandOne.concat(operator.concat(number.toString().split("")));
+  }
+  editor.textContent = buffer.join("");
+}
+
 function clear() {
   buffer.pop();
+  // If we delete a digit and there's only a negative symbol left, delete that
+  // too so it doesn't confuse the user or lead to an invalid operation
+  if (buffer[buffer.length - 1] === "-") {
+    buffer.pop();
+  }
   // If clearing makes buffer empty, reset buffer to it's initial state
   if (buffer.length === 0) {
     buffer = ["0"];
   }
   editor.textContent = buffer.join("");
 }
+
+// function evaluate() {
+//   // Do nothing if operator doesn't exist
+//   if (getOperatorIndex(buffer) === -1) {
+//     return;
+//   }
+// }
 
 function printBuffer() {
   console.log(buffer);
