@@ -93,8 +93,18 @@ const clearButton = document.querySelector("#clear");
 const signFlipButton = document.querySelector("#sign-flip");
 
 argsButtons.forEach((button) => {
-  button.addEventListener("click", () => {addNumber(button.textContent)});
-})
+  button.addEventListener("click", () => {
+    addNumber(button.textContent);
+    printBuffer();
+  });
+});
+
+opsButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setOperator(button.textContent);
+    printBuffer();
+  });
+});
 
 function resetState() {
   argumentOne = null;
@@ -135,11 +145,26 @@ function addNumber(number) {
   // If we are in the initial state, replace the default 0 with the first number
   if (buffer.length === 1 && buffer[0] === "0") {
     buffer = [number];
-    editor.textContent = number;
   } else {
     // Push to buffer if checks are valid
     buffer.push(number);
-    // Update display
-    editor.textContent += number;
   }
+  // Update display
+  editor.textContent = buffer.join("");
+}
+
+function setOperator(operator) {
+  let opIndex = getOperatorIndex(buffer);
+  // If the operator doesn't exist add it to buffer
+  if (opIndex === -1) {  
+    buffer.push(operator);
+  // If it does, replace the current
+  } else {
+    buffer[opIndex] = operator;
+  }
+  editor.textContent = buffer.join("");
+}
+
+function printBuffer() {
+  console.log(buffer);
 }
