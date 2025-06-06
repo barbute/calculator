@@ -95,6 +95,7 @@ const signFlipButton = document.querySelector("#sign-flip");
 argsButtons.forEach((button) => {
   button.addEventListener("click", () => {
     addNumber(button.textContent);
+    clearHistory();
     printBuffer();
   });
 });
@@ -102,6 +103,7 @@ argsButtons.forEach((button) => {
 opsButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setOperator(button.textContent);
+    clearHistory();
     printBuffer();
   });
 });
@@ -113,13 +115,20 @@ clearAllButton.addEventListener("click", () => {
 
 clearButton.addEventListener("click", () => {
   clear();
+  clearHistory();
   printBuffer();
 });
 
 signFlipButton.addEventListener("click", () => {
   signFlip();
+  clearHistory();
   printBuffer();
-})
+});
+
+equButton.addEventListener("click", () => {
+  evaluate();
+  printBuffer();
+});
 
 function resetState() {
   argumentOne = null;
@@ -133,6 +142,12 @@ function resetState() {
   editor.textContent = "0";
   
   buffer = [editor.textContent];
+}
+
+function clearHistory() {
+  historyArgOne.textContent = "";
+  historyOperator.textContent = "";
+  historyArgTwo.textContent = "";
 }
 
 function getOperatorIndex(arr) {
@@ -221,12 +236,65 @@ function clear() {
   editor.textContent = buffer.join("");
 }
 
-// function evaluate() {
-//   // Do nothing if operator doesn't exist
-//   if (getOperatorIndex(buffer) === -1) {
-//     return;
-//   }
-// }
+function evaluate() {
+  if (!isCompleteExpression()) {
+    return;
+  }
+  // Parse buffer
+  const opIndex = getOperatorIndex(buffer);
+  argumentOne = parseFloat(buffer.splice(0, opIndex).join(""));
+  let operator = buffer.splice(0, 1).toString();
+  operation = getOperationFromText(operator);
+  argumentTwo = parseFloat(buffer.splice(0, buffer.length).join(""));
+
+  // Run the operation
+  let result = operate(argumentOne, argumentTwo, operation);
+
+  // Update history
+  historyArgOne.textContent = argumentOne;
+  historyOperator.textContent = operator;
+  historyArgTwo.textContent = argumentTwo;
+  
+  // Store result in buffer
+  buffer = ["0"]; // Start but resetting the buffer to initial state
+  buffer = result.toString().split("");
+  editor.textContent = buffer.join("");
+}
+
+function isCompleteExpression() {
+  const opIndex = getOperatorIndex(buffer);
+  // False if operator doesn't exist
+  if (opIndex === -1) {
+    return false;
+  }
+  // False if there's nothing after operator 
+  else if (opIndex + 1 === buffer.length) {
+    return false;
+  }
+  // False if it's just the negative symbol after operator 
+  else if (buffer[opIndex + 1] === "-") {
+    return false;
+  }
+  // True if passes above conditions
+  else {
+    return true;
+  }
+}
+
+function getOperationFromText(operator) {
+  switch (operator) {
+    case "÷":
+      return Operation.DIVIDE;
+    case "×":
+      return Operation.MULTIPLY;
+    case "–":
+      return Operation.SUBTRACT;
+    case "+":
+      return Operation.ADD;
+    default:
+      return Operation.NOOP;
+  }
+}
 
 function printBuffer() {
   console.log(buffer);
